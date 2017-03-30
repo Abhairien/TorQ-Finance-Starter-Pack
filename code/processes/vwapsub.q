@@ -82,7 +82,7 @@ subscribe:{[]
     .lg.o[`subscribe;"found available tickerplant, attempting to subscribe"];
     .sub.subscribe[subscribeto;subscribesyms;schema;replaylog;first s];
     ];
-  .timer.rep[`timestamp$.proc.cd[]+00:00;0Wp;replayinterval;(`.vwapsub.calcvwap;`);0h;"Run calcvwap every 1";1b]
+  .timer.rep[`timestamp$.proc.cd[]+00:00;0Wp;replayinterval;(`logvwapnow;`);0h;"Run showvwapnow at set interval";1b]
   }
 
 \d .
@@ -91,7 +91,7 @@ subscribe:{[]
 vwap:([sym:`$()]spts:`float$();ssize:`int$());
 vwaptimes:([]time:`timestamp$();vwap:());
 
-calcvwap:.vwapsub.calcvwap
+logvwapnow:{.vwapsub.logvwap[.z.p]};
 
 // set upd function at top level
 upd:.vwapsub.upd;
