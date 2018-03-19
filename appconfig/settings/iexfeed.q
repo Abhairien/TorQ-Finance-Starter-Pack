@@ -19,8 +19,8 @@ tradesuffix:{[sym]"/1.0/tops/last?symbols=",sym}
 upd:{[t;x].iex.callbackhandle(.iex.callback;t; value flip delete time from x)}
 timerperiod:0D00:00:02.000
 
-trdcsv:getenv[`KDBAPPCONFIG],"/settings/trade_iex.csv";
-qtecsv:getenv[`KDBAPPCONFIG],"/settings/quote_iex.csv";
+trdcsv:hsym .proc.getconfigfile "trade_iex.csv";
+qtecsv:hsym .proc.getconfigfile "quote_iex.csv"
 
 \d .
 
