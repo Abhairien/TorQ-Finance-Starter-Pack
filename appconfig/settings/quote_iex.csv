@@ -1,9 +1,0 @@
-ocol,ncol,typ
-symbol,sym,S
-iexBidPrice,bid,f
-iexAskPrice,ask,f
-iexBidSize,bsize,i
-iexAskSize,asize,i
-mode,mode,C
-ex,ex,C
-latestUpdate,srctime,n
