@@ -3,10 +3,14 @@
 // replay logfile
 tab:flip`time`sym`price`size`stop`cond`ex!();
 upd:{[t;x]
-  if[`trade=t;
-  .vtwap.upd[t;tab upsert@[flip;x;enlist x]];
-  ];
+  if[t=`trade;
+    syms:distinct x 1;
+    .vtwap.data:@[value;`.vtwap.data;syms!()];
+    .vtwap.createtable[`.vtwap.data;exec([]time;price;size)by sym from (tab upsert @[flip;x;enlist x])]'[syms]
+    ];
  };
+
+/upd:{[t;x] if[any t=`trade;.l.l:x]};
 
 \d .vtwap
 
@@ -21,24 +25,24 @@ tpconnsleepintv:@[value;`tpconnsleepintv;10];                                   
 // fix on monday
 upd:{[t;x]
   syms:exec distinct sym from x;
-  if[any `trade`trade_iex=/t;
-    .twap.twap:@[value;`.twap.twap;syms!()];
-    .vwap.vwap:@[value;`.vwap.vwap;syms!()];
-    createtable[`.twap.twap;exec enlist last([]time;price)by sym from x]'[syms];
-    createtable[`.vwap.vwap;exec([]time;price;size)by sym from x]'[syms];
+  if[`trade=t;
+    .vtwap.data:@[value;`.vtwap.data;syms!()];
+    createtable[`.vtwap.data;exec([]time;price;size)by sym from x]'[syms];
    ];
  };
 
 createtable:{[tab;x;y]@[tab;y;upsert;x y]};
 
 subscribe:{[]
-        if[count s:.sub.getsubscriptionhandles[tickerplanttypes;();()!()];;
-                .lg.o[`subscribe;"found available tickerplant, attempting to subscribe"];
-                /-set the date that was returned by the subscription code i.e. the date for the tickerplant log file
-                /-and a list of the tables that the process is now subscribing for
-                subinfo:.sub.subscribe[subscribeto;subscribesyms;schema;replaylog;first s];
-                /-setting subtables and tplogdate globals
-                @[`.vtwap;;:;]'[key subinfo;value subinfo]]}
+  if[count s:.sub.getsubscriptionhandles[tickerplanttypes;();()!()];;
+    .lg.o[`subscribe;"found available tickerplant, attempting to subscribe"];
+    /-set the date that was returned by the subscription code i.e. the date for the tickerplant log file
+    /-and a list of the tables that the process is now subscribing for
+    subinfo:.sub.subscribe[subscribeto;subscribesyms;schema;replaylog;first s];
+    /-setting subtables and tplogdate globals
+    @[`.vtwap;;:;]'[key subinfo;value subinfo];
+    ];
+ };
 notpconnected:{[]
     0 = count select from .sub.SUBSCRIPTIONS where proctype in .vtwap.tickerplanttypes, active}
 \d .
@@ -63,11 +67,12 @@ upd:.vtwap.upd;
 getvwap:{[syms;st;et]
   :raze{[syms;st;et]
     :([]enlist sym:syms),'
-    select vwap:size wavg price from .vwap.vwap[syms] 
+    select vwap:size wavg price from .vtwap.data[syms]
       where time within(st;et);
   }[;st;et]'[syms];
  };
 
+/
 gettwap:{[syms;st;et]
   :raze{[syms;et;st]
     :([]enlist sym:syms),'
@@ -75,4 +80,4 @@ gettwap:{[syms;st;et]
       where time within(st;et);
    }[;st;et]'[syms];
  };
-
+\
