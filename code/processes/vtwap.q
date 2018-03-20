@@ -1,5 +1,3 @@
-/-default parameters
-
 // replay logfile
 tab:flip`time`sym`price`size`stop`cond`ex!();
 upd:{[t;x]
@@ -10,8 +8,6 @@ upd:{[t;x]
     ];
  };
 
-/upd:{[t;x] if[any t=`trade;.l.l:x]};
-
 \d .vtwap
 
 tickerplanttypes:@[value;`tickerplanttypes;`tickerplant];                                              // list of tickerplant types to try and make a connection to
@@ -21,8 +17,6 @@ subscribeto:@[value;`subscribeto;`trade`trade_iex];                             
 subscribesyms:@[value;`subscribesyms;`];                                                               // a list of syms to subscribe for, (`) means all syms
 tpconnsleepintv:@[value;`tpconnsleepintv;10];                                                          // number of seconds between attempts to connect to the tp
 
-// For TWAP - only store last trade in batch of same times?
-// fix on monday
 upd:{[t;x]
   syms:exec distinct sym from x;
   if[`trade=t;
@@ -49,18 +43,18 @@ notpconnected:{[]
 .servers.CONNECTIONS:distinct .servers.CONNECTIONS,.vtwap.tickerplanttypes
 
 /-set the upd function in the top level namespace
-tschema:flip `time`sym`price`size!()
 .lg.o[`init;"searching for servers"];
 .servers.startup[]; 
 /-subscribe to the tickerplant
 .vtwap.subscribe[];
 /-check if the tickerplant has connected, block the process until a connection is established
 while[.vtwap.notpconnected[];
-        /-while no connected make the process sleep for X seconds and then run the subscribe function again
-        .os.sleep[.vtwap.tpconnsleepintv];
-        /-run the servers startup code again (to make connection to discovery)
-        .servers.startup[];
-        .vtwap.subscribe[]]
+  /-while no connected make the process sleep for X seconds and then run the subscribe function again
+  .os.sleep[.vtwap.tpconnsleepintv];
+  /-run the servers startup code again (to make connection to discovery)
+  .servers.startup[];
+  .vtwap.subscribe[]
+  ]
 
 upd:.vtwap.upd;
 
@@ -72,12 +66,10 @@ getvwap:{[syms;st;et]
   }[;st;et]'[syms];
  };
 
-/
 gettwap:{[syms;st;et]
-  :raze{[syms;et;st]
-    :([]enlist sym:syms),'
-    select twap:(next[time]-time) wavg price from .twap.twap[syms]
-      where time within(st;et);
-   }[;st;et]'[syms];
- };
-\
+  :raze{[sym;st;et]
+    i:bin[t:"n"$(d:.vtwap.data[sym])`time;(st;et)];
+    ind:i[0]+til i[1]+1-i 0;
+    :([]enlist sym:sym;enlist twap:(deltas[st;1_t[ind],et])wavg d[`price]ind);
+   }[;"n"$st;"n"$et]'[syms];
+  };
