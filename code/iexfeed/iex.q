@@ -14,9 +14,9 @@ timerperiod:@[value;`timerperiod;0D00:00:02.000];
 lvcq:@[value;`lvcq;1!flip `sym`bid`ask`bsize`asize`mode`ex`srctime!()];
 lvct:@[value;`lvct;1!flip`sym`price`size`stop`cond`ex`srctime!()];
 qcols:@[value;`qcols;`bid`ask`bsize`asize`mode`ex];
-nullq:@[value;`nullq;qcols!(0f;0f;0;0;" ";" ")];
+nullq:@[value;`nullq;qcols!(0f;0f;0i;0i;" ";" ")];
 tcols:@[value;`tcols;`price`size`stop`cond`ex];
-nullt:@[value;`nullt;tcols!(0f;0;"B"$();" ";" ")];
+nullt:@[value;`nullt;tcols!(0f;0i;"B"$();" ";" ")];
 
 init:{[x]
   if[`mainurl in key x;.iex.mainurl:x`main_url];
