@@ -17,8 +17,6 @@ qcols:@[value;`qcols;`bid`ask`bsize`asize`mode`ex];
 nullq:@[value;`nullq;qcols!(0f;0f;0;0;" ";" ")];
 tcols:@[value;`tcols;`price`size`stop`cond`ex];
 nullt:@[value;`nullt;tcols!(0f;0;"B"$();" ";" ")];
-trdcsv:@[value;`trdcsv;hsym .proc.getconfigfile"trade_iex.csv"];
-qtecsv:@[value;`qtecsv;hsym .proc.getconfigfile"quote_iex.csv"];
 
 init:{[x]
   if[`mainurl in key x;.iex.mainurl:x`main_url];
@@ -40,19 +38,17 @@ getlasttrade:{
     / This function can run for multiple securities.
     syms:$[1<count x;","sv;]x:string upper syms,();
     / Construct the GET request
-    suffix:.iex.tradesuffix[syms];
     / Parse json response and put into table. Trade data from https://iextrading.com/developer/
-    data:.j.k .iex.getdata[.iex.mainurl;suffix];
+    data:.j.k .iex.getdata[.iex.mainurl;.iex.tradesuffix syms];
     :createtable[`.iex.dtrd;data];
-   }[.iex.syms]; 
-  tab:checkdup[;;`.iex.lvct;tcols;nullt]/[0#tab;tab]; 
+   }[.iex.syms];
+  tab:checkdup[;;`.iex.lvct;tcols;nullt]/[0#tab;tab];
   if[count tab;.iex.upd[`trade_iex;tab]];
  };
 
 getquote:{
   tab:raze{[sym]
-    sym:string[upper sym];
-    suffix:.iex.quotesuffix[sym];
+    suffix:.iex.quotesuffix string upper sym;
     / Parse json response and put into table
     data:enlist .j.k .iex.getdata[.iex.mainurl;suffix];
     :createtable[`.iex.dqte;data];
@@ -66,11 +62,11 @@ timerboth:{.iex.getlasttrade[];.iex.getquote[]};
 timerdict:`trade`quote`both!(.iex.getlasttrade;.iex.getquote;timerboth);
 
 timer:{
-  @[$[not .iex.reqtype in key .iex.timerdict;
-  {'`$"timer request type not valid: ",string .iex.reqtype};
-  .iex.timerdict[.iex.reqtype]];
-  [];
-  {.lg.e[`iextimer;"failed to run iex timer function: ",x]}]
+  if[not .iex.reqtype in key .iex.timerdict;
+    .lg.e[`iextimer;"failed to run iex timer function: timer request type not valid: ",string .iex.reqtype];
+    :();
+    ];
+  .iex.timerdict[.iex.reqtype][]; 
  };
 
 checkdup:{[x;y;lvc;c;n]
@@ -80,13 +76,12 @@ checkdup:{[x;y;lvc;c;n]
   :x;
  };
 
-createtable:{[x;data]update .iex.convertepoch[srctime] from x[`ncol]xcol flip x[`typ]$x[`ocol]#flip data};
+createtable:{[x;data]update .iex.convertepoch[srctime]from x[`ncol]xcol flip x[`typ]$x[`ocol]#flip data};
 
-loadcsv:{
-  `dtrd set ("SSC";enlist",")0:first trdcsv;
-  `dqte set ("SSC";enlist",")0:first qtecsv;
- };
+loadcsv:{("SSC";enlist",")0:x};
 
-loadcsv[];
+dtrd:@[loadcsv;first hsym .proc.getconfigfile"trade_iex.csv";{.lg.e[`iexloadcsv;"Failed to load config file: ",x]}];
+dqte:@[loadcsv;first hsym .proc.getconfigfile"quote_iex.csv";{.lg.e[`iexloadcsv;"Failed to load config file: ",x]}];
+
 
 \d . 
