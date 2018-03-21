@@ -5,14 +5,14 @@ run,,,q,dH[`iex]("c:.iex.getdata[.iex.mainurl;.iex.quotesuffix[\"DOG\"]]"),,,dow
 run,,,q,dH[`iex]("d:.iex.getdata[.iex.mainurl;.iex.tradesuffix[\"DOG\"]]"),,,downloads data (these might also be redundant)
 true,,,q,10h~type dH[`iex]("a"),,,checks if stremead data is type 10h
 true,,,q,10h~type dH[`iex]("b"),,,checks if streamed data is type 10h
-run,,,q,98h~type dH[`iex](".iex.createtable[`.iex.dqte;enlist .j.k a]"),,,check if function create table returns the right type 
-run,,,q,98h~type dH[`iex](".iex.createtable[`.iex.dtrd;.j.k b]"),,,check if functien create table returns the right type
+true,,,q,98h~type dH[`iex](".iex.createtable[`.iex.dqte;enlist .j.k a]"),,,check if function create table returns the right type 
+true,,,q,98h~type dH[`iex](".iex.createtable[`.iex.dtrd;.j.k b]"),,,check if functien create table returns the right type
 run,,,q,e:dH[`rdb]("tables[]!count each value each tables[]"),,,get a count of the values for all tables
 run,,,q,dH[`iex](".iex.upd[`quote_iex;enlist raze .iex.createtable[`.iex.dqte;enlist .j.k .iex.getdata[.iex.mainurl;.iex.quotesuffix[string[upper .iex.syms[0]]]]]]"),,,push table to quote_iex
 true,,,q,e[`quote_iex]<>dH[`rdb]("count quote_iex"),,,check table count increasing
 run,,,q,dH[`iex](".iex.upd[`trade_iex;.iex.createtable[`.iex.dtrd;.j.k .iex.getdata[.iex.mainurl;.iex.tradesuffix[\"CAT\"]]]]"),,,push table to trade_iex 
 true,,,q,e[`trade_iex]<>dH[`rdb]("count trade_iex"),,,check table count increasing
-run,,,q,dH[`iex]("tN::([]sym:`CAT`DOG;bid:(0f;0f); ask:(0f;0f); bsize:(0;0); asize:(0;0);mode:(\" \";\" \"); ex:(\" \";\" \");srctime:2001.01.01D01:01:01.100000000)"),,,create test table for nulls
+run,,,q,dH[`iex]("tN::([]sym:`CAT`DOG;bid:(0f;0f); ask:(0f;0f); bsize:(0i;0i); asize:(0i;0i);mode:(\" \";\" \"); ex:(\" \";\" \");srctime:2001.01.01D01:01:01.100000000)"),,,create test table for nulls
 true,,,q,0=dH[`iex]("count .iex.checkdup[;;`.iex.lvcq;.iex.qcols;.iex.nullq]/[0#tN;tN]"),,,check if count 0
 run,,,q,dH[`iex]("tD::([]sym:enlist `CAT;bid:120f;ask:140f;bsize:100i;asize:200i;mode:\"T\";ex:\"T\";srctime:2001.01.01D01:01:01.100000000)"),,,prepare test table
 run,,,q,dH[`iex]("delete from `.iex.lvcq;"),,,clear last memory cached 
