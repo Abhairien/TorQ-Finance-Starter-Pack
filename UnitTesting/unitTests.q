@@ -1,15 +1,16 @@
 //DEFAULT VALUES
-def:.Q.def[`stackID`user`pass`testCSV!(9000;`admin;`admin;`:utests/1iexfeed.csv)].Q.opt[.z.x] 
+def:.Q.def[`stackID`user`pass`testCSV`testData!(9000;`admin;`admin;`:utests/1iexfeed.csv;`:testData/)].Q.opt[.z.x] 
 
 //LOADING Q-SCRIPTS
-system"l ../../TorQ/tests/k4unit.q";
+system"l ../../TorQ/tests/k4unit.q"; 
 
 //UTILITIES
 //get the right port to open handle 
 getP:{[proc] 
      $[`rdb~proc;string[def[`stackID]+2];::]
      $[`feed~proc;string[def[`stackID]+14];::]
-     $[`iex~proc;string[def[`stackID]+19];::]};  
+     $[`iex~proc;string[def[`stackID]+19];::]
+     $[`vtwap~proc;string[def[`stackID]+21];::]};  
 
 //creating path for opening handle 
 path:{`$"::",getP[x],":",string[def[`user]],":",string[def[`pass]]};  
@@ -27,16 +28,21 @@ loadTest:{$[string[def[`testCSV]]like"*.csv";@[KUltf;hsym def[`testCSV];{-2"ERRO
 //openning handle to process
 opHandle:{[pTO]@[hopen;path[pTO];{-2"ERROR: ",x}]}; //open handle to IEX feed 
 
+loadFl:{load hsym `$string[def[`testData]],x}';  
 //MAIN
 init:{
        -1"LOADING TESTS... ";
        loadTest[];
-       dH::()!();
-       -1"OPENING HANDLES..."; 
+       -1"LOADING TEST DATA... ";
+       loadFl[system"ls testData/"]; /- this needs changed maybe a different function that adds the testData/
+       .vtwap.data:vtwap;
+       -1"OPENING HANDLES...";
+       dH::()!(); 
        dH[`rdb]::opHandle[`rdb];
        dH[`iex]::opHandle[`iex]; 
        dH[`feed]::opHandle[`feed];
-       -1"STOPING FEEDS..."; 
+       dH[`vtwap]::opHandle[`vtwap]; 
+       -1"STOPPING FEEDS..."; 
        stFeed[dH[`iex];`.iex.timer]; 
        stFeed[dH[`feed];`feed];
        -1"RUNNING TESTS...";

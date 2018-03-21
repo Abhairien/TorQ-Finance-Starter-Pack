@@ -18,6 +18,8 @@ run,,,q,dH[`iex]("tD::([]sym:enlist `CAT;bid:120f;ask:140f;bsize:100i;asize:200i
 run,,,q,dH[`iex]("delete from `.iex.lvcq;"),,,clear last memory cached 
 run,,,q,dH[`iex]("`.iex.lvcq upsert tD"),,,upsert testTabDup in lvcq to record it as a duplicate 
 true,,,q,0=dH[`iex]("count .iex.checkdup[;;`.iex.lvcq;.iex.qcols;.iex.nullq]/[0#tD;tD]"),,,checking if checkdup works as it should
+true,,,q,vwapBENCH~{(dH[`vtwap]("getvwap"))[x;16:30;17:00]}'[key .vtwap.data],,,compare vwap with Benchmark
+true,,,q,twapBENCH~{(dH[`vtwap]("gettwap"))[x;16:30;17:00]}'[key .vtwap.data],,,compare vwap with Benchmark
 
 
  
