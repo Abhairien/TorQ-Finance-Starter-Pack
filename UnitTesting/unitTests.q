@@ -2,7 +2,7 @@
 def:.Q.def[`stackID`user`pass`testCSV!(9000;`admin;`admin;`:utests/1iexfeed.csv)].Q.opt[.z.x] 
 
 //LOADING Q-SCRIPTS
-\l k4unit.q
+system"l ../../TorQ/tests/k4unit.q";
 
 //UTILITIES
 //get the right port to open handle 
@@ -22,7 +22,7 @@ opSystem:{[command]$[`l64~.z.o; $[`list~command;show system"ls";::];"nyi"]};
 stFeed:{x(".timer.remove[first exec id from .timer.timer where {[x](`",string[y],"`)~x}'[funcparam]]")}; 
 
 //check if csv file or directory 
-loadTest:{$["csv"~-3#string[def[`testCSV]];@[KUltf;hsym def[`testCSV];{-2"ERROR: "x}];@[KUltd;hsym def[`testCSV];{-2"ERROR: ",x}]]}; 
+loadTest:{$[string[def[`testCSV]]like"*.csv";@[KUltf;hsym def[`testCSV];{-2"ERROR: "x}];@[KUltd;hsym def[`testCSV];{-2"ERROR: ",x}]]}; 
 
 //openning handle to process
 opHandle:{[pTO]@[hopen;path[pTO];{-2"ERROR: ",x}]}; //open handle to IEX feed 
