@@ -21,5 +21,4 @@ true,,,q,vwapBENCH~{(dH[`vtwap]("getvwap"))[x;16:30;17:00]}'[key .vtwap.data],,,
 true,,,q,twapBENCH~{(dH[`vtwap]("gettwap"))[x;16:30;17:00]}'[key .vtwap.data],,,compare vwap with Benchmark
 run,5900,,q,\t:100 {(dH[`vtwap]("getvwap"))[x;16:30;17:00]}'[key .vtwap.data],,,check if times are less than bench
 run,1360,,q,\t:100 {(dH[`vtwap]("gettwap"))[x;16:30;17:00]}'[key .vtwap.data],,,check if times are less than bench
-
  
