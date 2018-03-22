@@ -1,12 +1,11 @@
 action,ms,bytes,lang,code,repeat,minver,comment
 run,,,q,dH[`iex]("a:.iex.getdata[.iex.mainurl;.iex.quotesuffix[\"CAT\"]]"),,,downloads quote data
 run,,,q,dH[`iex]("b:.iex.getdata[.iex.mainurl;.iex.tradesuffix[\"CAT\"]]"),,,download trade data
-run,,,q,dH[`iex]("c:.iex.getdata[.iex.mainurl;.iex.quotesuffix[\"DOG\"]]"),,,downloads data (these might be redundant)
-run,,,q,dH[`iex]("d:.iex.getdata[.iex.mainurl;.iex.tradesuffix[\"DOG\"]]"),,,downloads data (these might also be redundant)
 true,,,q,10h~type dH[`iex]("a"),,,checks if stremead data is type 10h
 true,,,q,10h~type dH[`iex]("b"),,,checks if streamed data is type 10h
 true,,,q,98h~type dH[`iex](".iex.createtable[`.iex.dqte;enlist .j.k a]"),,,check if function create table returns the right type 
 true,,,q,98h~type dH[`iex](".iex.createtable[`.iex.dtrd;.j.k b]"),,,check if functien create table returns the right type
+true,,,q,createtableBENCH~dH[`iex](`.iex.createtable;dtrd;dat),,,check if the output of the .iex.createtable is the same
 run,,,q,e:dH[`rdb]("tables[]!count each value each tables[]"),,,get a count of the values for all tables
 run,,,q,dH[`iex](".iex.upd[`quote_iex;enlist raze .iex.createtable[`.iex.dqte;enlist .j.k .iex.getdata[.iex.mainurl;.iex.quotesuffix[string[upper .iex.syms[0]]]]]]"),,,push table to quote_iex
 true,,,q,e[`quote_iex]<>dH[`rdb]("count quote_iex"),,,check table count increasing
@@ -20,6 +19,7 @@ run,,,q,dH[`iex]("`.iex.lvcq upsert tD"),,,upsert testTabDup in lvcq to record i
 true,,,q,0=dH[`iex]("count .iex.checkdup[;;`.iex.lvcq;.iex.qcols;.iex.nullq]/[0#tD;tD]"),,,checking if checkdup works as it should
 true,,,q,vwapBENCH~{(dH[`vtwap]("getvwap"))[x;16:30;17:00]}'[key .vtwap.data],,,compare vwap with Benchmark
 true,,,q,twapBENCH~{(dH[`vtwap]("gettwap"))[x;16:30;17:00]}'[key .vtwap.data],,,compare vwap with Benchmark
-
+run,5900,,q,\t:100 {(dH[`vtwap]("getvwap"))[x;16:30;17:00]}'[key .vtwap.data],,,check if times are less than bench
+run,1360,,q,\t:100 {(dH[`vtwap]("gettwap"))[x;16:30;17:00]}'[key .vtwap.data],,,check if times are less than bench
 
  
