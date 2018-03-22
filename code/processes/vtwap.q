@@ -27,7 +27,7 @@ subscribe:{[]
   if[count s:.sub.getsubscriptionhandles[tickerplanttypes;();()!()];
     .lg.o[`subscribe;"found available tickerplant, attempting to subscribe"];                          // set the date that was returned by the subscription code i.e. the date for the tickerplant log file
     subinfo:.sub.subscribe[subscribeto;subscribesyms;schema;replaylog;first s];                        // and a list of the tables that the process is now subscribing for
-    @[`.vtwap;;:;]'[key subinfo;value subinfo];                                                        // setting subtables and tplogdate globals
+    @[`.vtwap;key subinfo;:;value subinfo];                                                            // setting subtables and tplogdate globals
     ];
  };
 notpconnected:{[]
@@ -48,7 +48,7 @@ while[                                                                          
 
 upd:.vtwap.upd;                                                                                        // set the upd function in the top level namespace
 
-getvwap:{[syms;st;et]                                                                                  // 
+getvwap:{[syms;st;et]                                                                                  // calculate VWAP for a list of syms. st and et as times
   :raze{[st;et;sym]
     :([]enlist sym),'
     select vwap:size wavg price from .vtwap.data[sym]
@@ -56,10 +56,10 @@ getvwap:{[syms;st;et]                                                           
   }[st;et]'[syms];
  };
 
-gettwap:{[syms;st;et]
+gettwap:{[syms;st;et]										       // calculate TWAP for a list of syms. se and et as times
   :raze{[st;et;sym]
-    i:bin[t:"n"$(d:.vtwap.data sym)`time;(st;et)];
-    ind:i[0]+til i[1]+1-i 0;
-    :([]enlist sym;enlist twap:deltas[st;1_t[ind],et]wavg d[`price]ind);
+    i:bin[t:"n"$(d:.vtwap.data sym)`time;(st;et)];						       // get first and last index of times
+    ind:i[0]+til i[1]+1-i 0;									       // get full list of indices
+    :([]enlist sym;enlist twap:deltas[st;1_t[ind],et]wavg d[`price]ind);                              
    }["n"$st;"n"$et]'[syms];
   };
