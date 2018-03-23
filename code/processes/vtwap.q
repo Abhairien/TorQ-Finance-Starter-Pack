@@ -12,13 +12,9 @@ schema:@[value;`schema;0b];                                                     
 subscribeto:@[value;`subscribeto;`trade`trade_iex];                                                    // a list of tables to subscribe to, default (`) means all tables
 subscribesyms:@[value;`subscribesyms;`];                                                               // a list of syms to subscribe for, (`) means all syms
 tpconnsleepintv:@[value;`tpconnsleepintv;10];                                                          // number of seconds between attempts to connect to the tp
-
-init:{
-  .vtwap.timediff:@[value;`.vtwap.timediff;(`$())!()];
-  .vtwap.data:@[value;`.vtwap.data;(`$())!()];
-  .vtwap.state:([sym:`symbol$()]time:`timestamp$();pxsz:`float$();size:`int$());
- };
-init[]
+timediff:@[value;`timediff;(`$())!()];
+data:@[value;`data;(`$())!()];
+state:@[value;`state;([sym:`symbol$()]time:`timestamp$();pxsz:`float$();size:`int$())];
 
 upd:{[t;x]
   if[t<>`trade;:()];
