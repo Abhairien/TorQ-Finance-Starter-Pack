@@ -29,19 +29,15 @@ upd:{[t;x]
     @[`.vtwap.timediff;key p;,;value p];
     ];
   .vtwap.a:exec                                                                                        // extract data and add to lists
-    (time;
-    price;
+    (time;price;
     sums[size]+0i^.vtwap.state[first sym]`size;
     sums[price*size]+0f^.vtwap.state[first sym]`pxsz)
-    by sym
-    from x;
+    by sym from x;
   @[`.vtwap.data;key .vtwap.a;,';value .vtwap.a];
   `.vtwap.state upsert select                                                                          // keep state
-    last time,
-    pxsz:sum[price*size]+0f^.vtwap.state[first sym]`pxsz,
+    last time,pxsz:sum[price*size]+0f^.vtwap.state[first sym]`pxsz,
     size:sum[size]+0i^.vtwap.state[first sym]`size
-    by sym
-    from x;
+    by sym from x;
  };
 
 
