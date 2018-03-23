@@ -71,7 +71,7 @@ while[                                                                          
 
 upd:.vtwap.upd;                                                                                        // set the upd function in the top level namespace
 
-getvwap:{[syms;tm]
+getvwap:{[syms;tm]                                                                                     // list of syms, tm=previous time (00:10)
   st:.z.p-tm;et:.z.p;                                                                                  // get times as timestamp
   :raze{[st;et;sym]
     i:@[bin[.vtwap.data[sym]0;(st;et)];0;+;1];                                                         // get indexes
@@ -79,7 +79,7 @@ getvwap:{[syms;tm]
    }[st;et]'[syms];
   };
 
-gettwap:{[syms;tm]
+gettwap:{[syms;tm]                                                                                     // list of syms, tm=previous time (00:10)
   st:.z.p-tm;et:.z.p;
   :raze{[st;et;sym]
     i:bin[.vtwap.data[sym]0;(st;et)];
