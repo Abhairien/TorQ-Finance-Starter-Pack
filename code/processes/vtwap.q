@@ -1,9 +1,8 @@
 tab:flip`time`sym`price`size`stop`cond`ex!();
+
 upd:{[t;x]
   if[t<>`trade;:()];
-  syms:distinct x 1;
-  .vtwap.data:@[value;`.vtwap.data;syms!()];
-  .vtwap.addrows[`.vtwap.data;exec([]time;price;size)by sym from (tab upsert @[flip;x;enlist x])]'[syms];
+  .vtwap.upd[t;tab upsert@[flip;x;enlist x]];
  };
 
 \d .vtwap
@@ -14,25 +13,50 @@ subscribeto:@[value;`subscribeto;`trade`trade_iex];                             
 subscribesyms:@[value;`subscribesyms;`];                                                               // a list of syms to subscribe for, (`) means all syms
 tpconnsleepintv:@[value;`tpconnsleepintv;10];                                                          // number of seconds between attempts to connect to the tp
 
+init:{
+  .vtwap.state:([sym:`symbol$()]time:`timestamp$();pxsz:`float$();size:`int$());
+ };
+init[]
+
 upd:{[t;x]
   if[t<>`trade;:()];
   syms:exec distinct sym from x;
   .vtwap.data:@[value;`.vtwap.data;syms!()];
-  addrows[`.vtwap.data;exec([]time;price;size)by sym from x]'[syms];
+  .vtwap.timediff:@[value;`.vtwap.timediff;syms!()];
+  .vtwap.currenttime:first x`time;
+  if[count .vtwap.state;
+    p:exec deltas[.vtwap.currenttime^.vtwap.state[first sym]`time;time]by sym from x;
+    @[`.vtwap.timediff;key p;,;value p];
+    ];
+  
+  .vtwap.a:exec                                                                                        // extract data and add to lists
+    (time;
+    price;
+    sums[size]+0i^.vtwap.state[first sym]`size;
+    sums[price*size]+0f^.vtwap.state[first sym]`pxsz)
+    by sym 
+    from x; 
+  @[`.vtwap.data;key .vtwap.a;,';value .vtwap.a];
+  `.vtwap.state upsert select                                                                          // keep state
+    last time,
+    pxsz:sum[price*size]+0f^.vtwap.state[first sym]`pxsz,
+    size:sum[size]+0i^.vtwap.state[first sym]`size 
+    by sym 
+    from x;
  };
 
-addrows:{[tab;x;y]@[tab;y;upsert;x y]};
 
 subscribe:{[]
   if[count s:.sub.getsubscriptionhandles[tickerplanttypes;();()!()];
     .lg.o[`subscribe;"found available tickerplant, attempting to subscribe"];                          // set the date that was returned by the subscription code i.e. the date for the tickerplant log file
     subinfo:.sub.subscribe[subscribeto;subscribesyms;schema;replaylog;first s];                        // and a list of the tables that the process is now subscribing for
-    @[`.vtwap;key subinfo;:;value subinfo];                                                            // setting subtables and tplogdate globals
+    @[`.vtwap;;:;]'[key subinfo;value subinfo];                                                        // setting subtables and tplogdate globals
     ];
  };
 notpconnected:{[]
     :0 = count select from .sub.SUBSCRIPTIONS where proctype in .vtwap.tickerplanttypes, active;
  };
+
 \d .
 .servers.CONNECTIONS:distinct .servers.CONNECTIONS,.vtwap.tickerplanttypes
 
@@ -48,18 +72,21 @@ while[                                                                          
 
 upd:.vtwap.upd;                                                                                        // set the upd function in the top level namespace
 
-getvwap:{[syms;st;et]                                                                                  // calculate VWAP for a list of syms. st and et as times
+getvwap:{[syms;tm]
+  st:.z.p-tm;et:.z.p;                                                                                  // get times as timestamp
   :raze{[st;et;sym]
-    :([]enlist sym),'
-    select vwap:size wavg price from .vtwap.data[sym]
-      where time within(st;et);
-  }[st;et]'[syms];
- };
-
-gettwap:{[syms;st;et]										       // calculate TWAP for a list of syms. se and et as times
-  :raze{[st;et;sym]
-    i:bin[t:"n"$(d:.vtwap.data sym)`time;(st;et)];						       // get first and last index of times
-    ind:i[0]+til i[1]+1-i 0;									       // get full list of indices
-    :([]enlist sym;enlist twap:deltas[st;1_t[ind],et]wavg d[`price]ind);                              
-   }["n"$st;"n"$et]'[syms];
+    i:@[bin[.vtwap.data[sym]0;(st;et)];0;+;1];                                                         // get indexes
+    :([]enlist sym;enlist vwap:last[deltas .vtwap.data[sym][3]i] % last[deltas .vtwap.data[sym][2]i]); 
+   }[st;et]'[syms];
   };
+
+gettwap:{[syms;tm]
+  st:.z.p-tm;et:.z.p;
+  :raze{[st;et;sym]
+    i:bin[.vtwap.data[sym]0;(st;et)];
+    pi:i[0]+til 1+i[1]-i 0;                                                                            // get indexes of prices and times
+    ti:1_pi;
+    times:(.vtwap.data[sym][0][ti 0]-st),.vtwap.timediff[sym][-1_ti],et-.vtwap.data[sym][0]last ti;    // get correct time differences for full period
+    :([]enlist sym;enlist vwap:(sum times*.vtwap.data[sym][1]pi)%(et-st));
+   }[st;et]'[syms];
+ }; 
