@@ -14,6 +14,8 @@ subscribesyms:@[value;`subscribesyms;`];                                        
 tpconnsleepintv:@[value;`tpconnsleepintv;10];                                                          // number of seconds between attempts to connect to the tp
 
 init:{
+  .vtwap.timediff:@[value;`.vtwap.timediff;(`$())!()];
+  .vtwap.data:@[value;`.vtwap.data;(`$())!()];
   .vtwap.state:([sym:`symbol$()]time:`timestamp$();pxsz:`float$();size:`int$());
  };
 init[]
@@ -21,8 +23,6 @@ init[]
 upd:{[t;x]
   if[t<>`trade;:()];
   syms:exec distinct sym from x;
-  .vtwap.data:@[value;`.vtwap.data;syms!()];
-  .vtwap.timediff:@[value;`.vtwap.timediff;syms!()];
   .vtwap.currenttime:first x`time;
   if[count .vtwap.state;
     p:exec deltas[.vtwap.currenttime^.vtwap.state[first sym]`time;time]by sym from x;
