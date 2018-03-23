@@ -76,7 +76,7 @@ getvwap:{[syms;tm]
   st:.z.p-tm;et:.z.p;                                                                                  // get times as timestamp
   :raze{[st;et;sym]
     i:@[bin[.vtwap.data[sym]0;(st;et)];0;+;1];                                                         // get indexes
-    :([]enlist sym;enlist vwap:last[deltas .vtwap.data[sym][3]i] % last[deltas .vtwap.data[sym][2]i]); 
+    :([]enlist sym;enlist vwap:last[deltas .vtwap.data[sym][3]i]%last[deltas .vtwap.data[sym][2]i]); 
    }[st;et]'[syms];
   };
 
@@ -84,8 +84,8 @@ gettwap:{[syms;tm]
   st:.z.p-tm;et:.z.p;
   :raze{[st;et;sym]
     i:bin[.vtwap.data[sym]0;(st;et)];
-    pi:i[0]+til 1+i[1]-i 0;                                                                            // get indexes of prices and times
-    ti:1_pi;
+    pi:i[0]+til 1+i[1]-i 0;                                                                            // get indexes of prices
+    ti:1_pi;                                                                                           // get indexes of times
     times:(.vtwap.data[sym][0][ti 0]-st),.vtwap.timediff[sym][-1_ti],et-.vtwap.data[sym][0]last ti;    // get correct time differences for full period
     :([]enlist sym;enlist vwap:(sum times*.vtwap.data[sym][1]pi)%(et-st));
    }[st;et]'[syms];
