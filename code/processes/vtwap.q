@@ -36,7 +36,6 @@ upd:{[t;x]
     by sym from x;
  };
 
-
 subscribe:{[]
   if[count s:.sub.getsubscriptionhandles[tickerplanttypes;();()!()];
     .lg.o[`subscribe;"found available tickerplant, attempting to subscribe"];                          // set the date that was returned by the subscription code i.e. the date for the tickerplant log file
@@ -44,9 +43,8 @@ subscribe:{[]
     @[`.vtwap;key subinfo;:;value subinfo];                                                            // setting subtables and tplogdate globals
     ];
  };
-notpconnected:{[]
-    :0 = count select from .sub.SUBSCRIPTIONS where proctype in .vtwap.tickerplanttypes, active;
- };
+
+notpconnected:{0=count select from .sub.SUBSCRIPTIONS where proctype in .vtwap.tickerplanttypes,active};
 
 \d .
 .servers.CONNECTIONS:distinct .servers.CONNECTIONS,.vtwap.tickerplanttypes
@@ -66,18 +64,18 @@ upd:.vtwap.upd;                                                                 
 getvwap:{[syms;tm]                                                                                     // list of syms, tm=previous time (00:10)
   st:.z.p-tm;et:.z.p;                                                                                  // get times as timestamp
   :raze{[st;et;sym]
-    i:@[bin[.vtwap.data[sym]0;(st;et)];0;+;1];                                                         // get indexes
-    :([]enlist sym;vwap:last[deltas .vtwap.data[sym][3]i]%last[deltas .vtwap.data[sym][2]i]);
+    i:@[bin[.vtwap.data[sym;0];(st;et)];0;+;1];                                                        // get indexes
+    :([]enlist sym;vwap:last[deltas .vtwap.data[sym;3;i]]%last[deltas .vtwap.data[sym;2;i]])
    }[st;et]'[syms];
-  };
+ };
 
 gettwap:{[syms;tm]                                                                                     // list of syms, tm=previous time (00:10)
   st:.z.p-tm;et:.z.p;
   :raze{[st;et;sym]
-    i:bin[.vtwap.data[sym]0;(st;et)];
+    i:bin[.vtwap.data[sym;0];(st;et)];
     pi:i[0]+til 1+i[1]-i 0;                                                                            // get indexes of prices
     ti:1_pi;                                                                                           // get indexes of times
-    times:(.vtwap.data[sym][0][ti 0]-st),.vtwap.timediff[sym][-1_ti],et-.vtwap.data[sym][0]last ti;    // get correct time differences for full period
-    :([]enlist sym;vwap:(sum times*.vtwap.data[sym][1]pi)%et-st);
+    times:(.vtwap.data[sym;0;ti 0]-st),.vtwap.timediff[sym;-1_ti],et-.vtwap.data[sym;0;last ti];       // get correct time differences for full period
+    :([]enlist sym;vwap:sum[times*.vtwap.data[sym;1;pi]]%et-st);
    }[st;et]'[syms];
  };
