@@ -28,20 +28,19 @@ upd:{[t;x]
     p:exec deltas[.vtwap.currenttime^.vtwap.state[first sym]`time;time]by sym from x;
     @[`.vtwap.timediff;key p;,;value p];
     ];
-  
   .vtwap.a:exec                                                                                        // extract data and add to lists
     (time;
     price;
     sums[size]+0i^.vtwap.state[first sym]`size;
     sums[price*size]+0f^.vtwap.state[first sym]`pxsz)
-    by sym 
-    from x; 
+    by sym
+    from x;
   @[`.vtwap.data;key .vtwap.a;,';value .vtwap.a];
   `.vtwap.state upsert select                                                                          // keep state
     last time,
     pxsz:sum[price*size]+0f^.vtwap.state[first sym]`pxsz,
-    size:sum[size]+0i^.vtwap.state[first sym]`size 
-    by sym 
+    size:sum[size]+0i^.vtwap.state[first sym]`size
+    by sym
     from x;
  };
 
@@ -61,7 +60,7 @@ notpconnected:{[]
 .servers.CONNECTIONS:distinct .servers.CONNECTIONS,.vtwap.tickerplanttypes
 
 .lg.o[`init;"searching for servers"];
-.servers.startup[]; 
+.servers.startup[];
 .vtwap.subscribe[];                                                                                    // subscribe to the tickerplant
 while[                                                                                                 // check if the tickerplant has connected, block the process until a connection is established
   .vtwap.notpconnected[];
@@ -89,4 +88,4 @@ gettwap:{[syms;tm]
     times:(.vtwap.data[sym][0][ti 0]-st),.vtwap.timediff[sym][-1_ti],et-.vtwap.data[sym][0]last ti;    // get correct time differences for full period
     :([]enlist sym;enlist vwap:(sum times*.vtwap.data[sym][1]pi)%(et-st));
    }[st;et]'[syms];
- }; 
+ };
