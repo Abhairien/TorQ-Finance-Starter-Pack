@@ -75,7 +75,7 @@ getvwap:{[syms;tm]                                                              
   st:.z.p-tm;et:.z.p;                                                                                  // get times as timestamp
   :raze{[st;et;sym]
     i:@[bin[.vtwap.data[sym]0;(st;et)];0;+;1];                                                         // get indexes
-    :([]enlist sym;enlist vwap:last[deltas .vtwap.data[sym][3]i]%last[deltas .vtwap.data[sym][2]i]); 
+    :([]enlist sym;enlist vwap:last[deltas .vtwap.data[sym][3]i]%last[deltas .vtwap.data[sym][2]i]);
    }[st;et]'[syms];
   };
 
