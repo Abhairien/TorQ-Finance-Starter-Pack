@@ -1,7 +1,18 @@
 comment,0,0,q,,,,Comment
-run,0,0,q,h::hopen `::29007:admin:admin,,,Test connection
-run,0,0,q,hopen `::12345:rdb:pass,,,Test connection
-run,0,0,q,h".gw.syncexec[\"select from trade\";`hdb]",,,Test Query basic select
-run,0,0,q,h".gw.syncexec[\"select from trade where date=2018.03.25\";`hdb]",,,Test Query basic select with date
-run,0,0,q,h".gw.syncexec[(?;`trade;enlist (=;`date;2018.03.13);0b;());`hdb]",,,Test Query funct with date
-run,0,0,q,h".gw.syncexec[(?;`trade;();0b;());`hdb]",,,Test Query funct
+run,0,0,q,h::hopen `::${KDBSTACKID}:admin:admin,,,Test gateway connection
+fail,0,0,q,hopen `::12345:rdb:pass,,,Test different connection
+fail,0,0,q,h".gw.syncexec[\"select from trade\";`hdb]",,,Test basic select query
+run,0,0,q,h".gw.syncexec[\"select from trade where date=2018.03.13\";`hdb]",,,Test basic select query with date
+run,0,0,q,h".gw.syncexec[(?;`trade;enlist (=;`date;2018.03.13);0b;());`hdb]",,,Test functional select query with date
+fail,0,0,q,h".gw.syncexec[(?;`trade;();0b;());`hdb]",,,Test functional select query
+run,0,0,q,h".gw.syncexec[\"vwap[`AAPL;2018.01.01]\";`hdb]",,,Test vwap with date
+run,0,0,q,h".gw.syncexec[\"count select from trade\";`hdb],,,Test basic select with count
+run,0,0,q,h".gw.syncexec[\"select from trade where date in (2018.03.13;2018.03.25)\";`hdb]",,,Test basic select query with multiple dates
+run,0,0,q,h".gw.syncexec[\"delete from quote\";`hdb],,,Test delete quote data from hdb
+run,0,0,q,h".gw.syncexec[\"select from trade\";`hdb],,,Check trade table count increasing
+run,0,0,q,h".gw.syncexec[\"select from quote\";`],,,Test query with no specific DB
+run,0,0,q,h".gw.syncexec[\"select from trade where date in (2018.03.13;2018.02.25)\";`hdb]",,,Multiple date selection 
+run,0,0,q,h".gw.syncexec[\"delete from trade\";`hdb],,,Test delete trade from hdb
+run,0,0,q,h".gw.syncexec[\"select from quote\";`hdb],,,Check quote table count increasing
+run,0,0,q,hclose h:admin:admin,,,Test hclose
+run,0,0,q,h".gw.syncexec[(?;`trade;enlist (in;`date;(2018.03.13;2018.03.25));0b;());`hdb]",,,Test functional select query with multiple dates
