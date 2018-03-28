@@ -1,0 +1,4 @@
+action,ms,bytes,lang,code,repeat,minver,comment
+true,0,0,,1~count .h.rdb(`trade),,, Count entries in the RDB 
+true,0,0,,1~count .h.rdb(`quote),,, Count entries in the RDB
+run,0,0,,hclose .h.rdb,,, Close the handle

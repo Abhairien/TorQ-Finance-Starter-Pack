@@ -1,0 +1,4 @@
+action,ms,bytes,lang,code,repeat,minver,comment
+run,0,0,,.h.tp(`.u.upd;`trade;(`TEST;1.1;3i;0b;"A";"C")),,, Pass data to trade
+run,0,0,,.h.tp(`.u.upd;`quote;(`TEST;1.1;2.2;100;200;"A";"C")),,, Pass data to quote
+run,0,0,,hclose .h.tp,,,Close connection
