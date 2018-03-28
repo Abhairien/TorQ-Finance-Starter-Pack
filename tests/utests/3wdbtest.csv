@@ -1,5 +1,0 @@
-action,ms,bytes,lang,code,repeat,minver,comment
-true,0,0,,1~count .h.wdb(`trade),,, Count entries in the trade table 
-true,0,0,,1~count .h.wdb(`quote),,, Count entries in the quote table
-run,0,0,,.h.wdb(`.u.end;.z.D),,, Send end of day signal
-run,0,0,,hclose .h.wdb,,, Close the handle

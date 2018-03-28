@@ -81,3 +81,7 @@ nohup q torq.q -load code/processes/wdb.q ${KDBSTACKID} -proctype sortslave -pro
 # launch metrics
 echo 'Stating metrics...'
 nohup q torq.q -load code/processes/metrics.q ${KDBSTACKID} -proctype metrics -procname metrics1 -U appconfig/passwords/accesslist.txt -localtime -g 1 </dev/null >$KDBLOG/torqmetrics.txt 2>&1 &
+
+#Execute Unit tests
+echo 'Executing Unit Tests...'
+nohup q torq.q -procname unittests1 -proctype unittests -load tests/runtests.q -test tests/gwtest.csv -debug </dev/null >$KDBLOG/unittests1.txt 2>&1 &

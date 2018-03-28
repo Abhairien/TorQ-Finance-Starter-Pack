@@ -1,7 +1,0 @@
-comment,0,0,q,,,,Comment
-run,0,0,q,h::hopen `::29007:admin:admin,,,Test connection
-run,0,0,q,hopen `::12345:rdb:pass,,,Test connection
-run,0,0,q,h".gw.syncexec[\"select from trade\";`hdb]",,,Test Query basic select
-run,0,0,q,h".gw.syncexec[\"select from trade where date=2018.03.25\";`hdb]",,,Test Query basic select with date
-run,0,0,q,h".gw.syncexec[(?;`trade;enlist (=;`date;2018.03.13);0b;());`hdb]",,,Test Query funct with date
-run,0,0,q,h".gw.syncexec[(?;`trade;();0b;());`hdb]",,,Test Query funct
